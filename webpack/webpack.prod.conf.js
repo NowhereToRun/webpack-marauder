@@ -280,6 +280,22 @@ module.exports = function({ entry }) {
   //   const swConfig = maraConf.sw_config || {}
   //   webpackConfig.plugins.push(new webpackWS(swConfig))
   // }
-
+  if (maraConf.sw) {
+    const workboxPlugin = require('workbox-webpack-plugin');
+    const swConfig = maraConf.sw_config || {};
+    const swFileName = swConfig.swName || 'sw.js';
+    let pathConfig = {
+      globDirectory: distPageDir,
+      swDest: rootPath(`${distPageDir}/${swFileName}`)
+    };
+    let defaultConfig = {
+      globPatterns: ['**/*.{html,js,css}'],
+      clientsClaim: true,
+      skipWaiting: true,
+    };
+    let finalConfig = Object.assign(defaultConfig, swConfig, pathConfig);
+    webpackConfig.plugins.push(new workboxPlugin(finalConfig))
+  }
+  
   return webpackConfig
 }
